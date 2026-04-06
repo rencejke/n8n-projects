@@ -1,0 +1,322 @@
+{
+  "name": "Text to Image",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e37bde05-96d5-4afb-b01a-f52af350af7e",
+      "name": "When chat message received",
+      "webhookId": "ee0d9c41-0465-48c2-9ce8-ea1670485ac0"
+    },
+    {
+      "parameters": {
+        "url": "=https://gen.pollinations.ai/image/ {{ $json.content.parts[0].text }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "flux"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.content.parts[0].text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        560,
+        0
+      ],
+      "id": "594333c9-3a05-484c-b3f7-a2ebcfc9e73b",
+      "name": "Pollination AI POST",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "O8HDNEUPqADyMGwx",
+          "name": "Pollination All Model"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        0
+      ],
+      "id": "8b36e974-8583-40a4-a1a0-525e3d22f884",
+      "name": "Wait 15 seconds",
+      "webhookId": "47b831ee-cf92-4f7b-8bea-b9eddd257f1f"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.chatInput }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "=You are an expert Text-to-Image Generation Prompt Engineer, working inside an n8n automation. Your only task is to generate clear, vivid, and effective prompts to be passed into an image generation API. You do not output any explanations, commentary, or formatting. Return only the prompt string to generate the image.  A Constraints:  Output a single-line, coherent prompt optimized for high- quality image generation.  Do not include prompt metadata (e.g., aspect ratio, resolution, model name, seed).  You must not respond with markdown, code blocks, or labels. Output the prompt text only.  Do not explain or summarize your reasoning. Output the final result only.  Prompt Engineering Guidelines:  Translate vague descriptions into rich visual details.  Enhance prompt with descriptors: lighting, mood, environment, composition, art style.  Use cinematic or artistic keywords where relevant (e.g., \"digital art,\" \"studio lighting,\" \"depth of field\").  Resolve ambiguities. Clarify unclear requests into visually distinct concepts."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c5d4cb29-0d7a-40b4-b0ce-1b3e1be9a491",
+      "name": "Image AI Agent",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tHA4NCic7qaQbxDi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b08e9958-f66c-4837-8f0a-48ba35d1e00e",
+              "leftValue": "=data",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "bb32f995-0d29-41f2-be0b-ac1212c85edb",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        256
+      ],
+      "id": "98f06aca-8772-4d76-b8a4-8852c45c0124",
+      "name": "Wait",
+      "webhookId": "1a00da33-0a87-4f28-8b66-3dc84ac2cae4"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "9a7490c2-4194-4e4a-acea-f6601bd2c7c2",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        -16
+      ],
+      "id": "1d501f05-f80b-4bcf-a7f2-ee6b278e16dc",
+      "name": "Convert to File",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "",
+        "subject": "=Image Generated {{ $('When chat message received').item.json.chatInput }}",
+        "message": "This is the generated Image",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        -32
+      ],
+      "id": "76bb5ad1-4796-4012-88e6-d7405aef7b05",
+      "name": "Send a message",
+      "webhookId": "f8180837-e4a5-40ea-959f-5f4be13a1b5c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cCbGwPal08iyQQ8N",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Image AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pollination AI POST": {
+      "main": [
+        [
+          {
+            "node": "Wait 15 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Pollination AI POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 15 seconds": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Pollination AI POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "f383b59d-9f06-4abe-954b-04989d23bf0d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6d70ecd0364098eefb3995a906c7228fe28f0da7423f903d27cce071f51fdf54"
+  },
+  "id": "rqf18ca6uygEGYkv6CBfM",
+  "tags": []
+}
