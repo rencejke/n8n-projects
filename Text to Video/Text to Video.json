@@ -1,0 +1,319 @@
+{
+  "name": "Text to Video",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "60eaf21f-febf-441d-af18-cdc617d66ac2",
+      "name": "When chat message received",
+      "webhookId": "a7bbc781-ca85-4330-a031-e5e445275664"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.chatInput }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "=You are an expert Text-to-Video Generation Prompt Engineer,\nworking inside an n8n automation.\nYour only task is to generate clear, vivid, and effective\nprompts to be passed into a video generation API.\nYou do not output any explanations, commentary, or\nformatting. Return only the prompt string to generate the\nvideo.\n\nA Constraints:\n\nOutput a single-line, coherent prompt optimized for high-\nquality video generation.\n\nDo not include prompt metadata (e.g., duration, resolution,\nframe rate, model name, seed).\n\nYou must not respond with markdown, code blocks, or labels.\nOutput the prompt text only.\n\nDo not explain or summarize your reasoning. Output the\nfinal result only.\n\nPrompt Engineering Guidelines:\nTranslate vague descriptions into rich, dynamic scene\ndetails.\n\nEnhance prompt with descriptors: motion, pacing, mood,\nenvironment, lighting, cinematic style.\n\nUse cinematic or artistic keywords where relevant (e.g.,\n\"sweeping aerial shot,\" \"shallow depth of field,\" \"dramatic\nlighting\")."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        0
+      ],
+      "id": "2b62e36b-bcc7-47cf-972c-7a004f954baa",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tHA4NCic7qaQbxDi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        736,
+        0
+      ],
+      "id": "ef78aa83-efc0-408c-bf84-2b4f8c2faed8",
+      "name": "Wait 10s",
+      "webhookId": "bc83fe8f-786c-466a-9476-6102d6ca5a6d"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "432efd58-9263-4331-82cd-87ebf8170f8b",
+              "leftValue": "={{ $json.msg }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        944,
+        0
+      ],
+      "id": "d397b578-9727-43ee-83b1-db382f6e5cd7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"grok-imagine/text-to-video\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": \"{{ $json.content.parts[0].text }}\",\n    \"aspect_ratio\": \"2:3\",\n    \"mode\": \"normal\",\n    \"duration\": \"6\",\n    \"resolution\": \"480p\"\n  }\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        528,
+        0
+      ],
+      "id": "9282e88e-c418-4022-8931-12f3ce65a9eb",
+      "name": "KIE API POST",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "347XDqkw2oUttD72",
+          "name": "Kie Header AUTH CJB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1232,
+        -16
+      ],
+      "id": "d9ba2fa2-8479-4718-b36a-8c011bede63c",
+      "name": "KIE API GET",
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "347XDqkw2oUttD72",
+          "name": "Kie Header AUTH CJB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        240
+      ],
+      "id": "e186ecea-0b6f-4c8e-bfc5-01daec6ee8a4",
+      "name": "Wait  Another 10s",
+      "webhookId": "8c6b0059-9532-468d-b841-42bafaa31c70"
+    },
+    {
+      "parameters": {
+        "sendTo": "ethale061@gmail.com",
+        "subject": "=Video Generated -  {{ $now }}",
+        "message": "=<p>Hi,</p>\n\n<p>Your video has been successfully generated and is ready to Download or view.</p>\n\n<p>\n  <a href=\"{{ JSON.parse($json.data.resultJson).resultUrls[0] }}\" \n     style=\"background-color:#2563eb;\n            color:#ffffff;\n            padding:12px 20px;\n            text-decoration:none;\n            border-radius:6px;\n            display:inline-block;\n            font-weight:600;\">\n    Download / View Video\n  </a>\n</p>\n\n<p>If you need any adjustments, feel free to reply to this email.</p>\n\n<p>Best regards,<br>\nClarence</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1456,
+        -16
+      ],
+      "id": "e922dabe-c759-42e5-9378-120477c79c36",
+      "name": "Send a message",
+      "webhookId": "e8139e2a-558e-41db-ae6c-dbecaf8e83eb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cCbGwPal08iyQQ8N",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "**n8n Text-to-Video Workflow**\n\n**Purpose:**\nThis workflow takes a user message, generates a prompt using Gemini, converts it into a video using KIE API, and sends the resulting video link via HTML-formatted email.\n\n**Flow Steps:**\n\n**Chat Trigger Node:**\n- Receives the user message.\n- Can be replaced with any messaging node (e.g., Telegram, Discord).\n\n**Gemini Message Node:**\n- Uses a system message you created to generate a prompt based on the user message.\n- Outputs the generated prompt.\n\n**KIE API POST Request Node:**\n- Sends the generated prompt to the KIE API to start video generation.\n\n**Wait & Status Check:**\n- Waits 10 seconds.\n- Checks the status of the video generation:\n\nIf status = success → proceed to GET request\n\nElse → wait another 10 seconds and loop back to KIE API POST request.\n\n**KIE API GET Request Node:**\n- Retrieves the generated video once the status is success.\n\n**Email Node:**\n- Sends the generated video link via email.\n- Formats the email in HTML for a designed layout.\n\n**Notes:**\n- The workflow automates prompt-to-video conversion using KIE API.\n- Chat trigger node can be swapped for any messaging platform.\n- Loop ensures video generation completes before sending the link.",
+        "height": 800,
+        "width": 624
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -288
+      ],
+      "id": "0f626286-0bf2-4536-bb67-cbab50f6c944",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "KIE API POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10s": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "KIE API GET",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait  Another 10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KIE API POST": {
+      "main": [
+        [
+          {
+            "node": "Wait 10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait  Another 10s": {
+      "main": [
+        [
+          {
+            "node": "KIE API POST",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KIE API GET": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "67e68584-db1b-4ba6-874e-bfcdaec8ffd3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6d70ecd0364098eefb3995a906c7228fe28f0da7423f903d27cce071f51fdf54"
+  },
+  "id": "6HQSKYvO-XSHcJr_ZN_XH",
+  "tags": []
+}
