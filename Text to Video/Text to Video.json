@@ -180,7 +180,7 @@
     },
     {
       "parameters": {
-        "sendTo": "ethale061@gmail.com",
+        "sendTo": "",
         "subject": "=Video Generated -  {{ $now }}",
         "message": "=<p>Hi,</p>\n\n<p>Your video has been successfully generated and is ready to Download or view.</p>\n\n<p>\n  <a href=\"{{ JSON.parse($json.data.resultJson).resultUrls[0] }}\" \n     style=\"background-color:#2563eb;\n            color:#ffffff;\n            padding:12px 20px;\n            text-decoration:none;\n            border-radius:6px;\n            display:inline-block;\n            font-weight:600;\">\n    Download / View Video\n  </a>\n</p>\n\n<p>If you need any adjustments, feel free to reply to this email.</p>\n\n<p>Best regards,<br>\nClarence</p>",
         "options": {}
