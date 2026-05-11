@@ -1,0 +1,172 @@
+{
+  "name": "Error Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8f8ae56a-6551-4e58-8277-b08b457431c6",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        176,
+        0
+      ],
+      "id": "165be6b9-e158-45c2-a0ad-e8354d0f15f7",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "sendTo": "bonillaclarencejake@gmail.com",
+        "subject": "={{ $('Error Trigger').item.json.workflow.name }} - ERROR",
+        "message": "=There was an error\n\nWorkflow name: {{ $('Error Trigger').item.json.workflow.name }}\n\nError Message: {{ $('Error Trigger').item.json.execution.error.message }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        96
+      ],
+      "id": "8b249776-3f83-4a2d-97dc-2d5750d3a6b3",
+      "name": "Send a message1",
+      "webhookId": "2269764c-20ce-4e60-8b9f-062f78417058",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JOXpAHul6UC3wQhK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Lu3SIr_d-gFSmvcWG0AuJ3yoJUUlWxxUBgmTh6xqnsA",
+          "mode": "list",
+          "cachedResultName": "Log Errors",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Lu3SIr_d-gFSmvcWG0AuJ3yoJUUlWxxUBgmTh6xqnsA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Lu3SIr_d-gFSmvcWG0AuJ3yoJUUlWxxUBgmTh6xqnsA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Workflow": "={{ $('Error Trigger').item.json.workflow.name }}",
+            "Error Mesage": "={{ $('Error Trigger').item.json.execution.error.message }}",
+            "Date": "={{ $json.formattedDate }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Workflow",
+              "displayName": "Workflow",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error Mesage",
+              "displayName": "Error Mesage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        -160
+      ],
+      "id": "30ea5759-6081-41f7-b9fc-f1d303d25e5b",
+      "name": "log errors",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hDLyMZTxYmRl9Rac",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "log errors",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8aca7bd2-39d3-492f-8b76-76a02623b6da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "II21jfFd7M8uqYww",
+  "tags": []
+}
