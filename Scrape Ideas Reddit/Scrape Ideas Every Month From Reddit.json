@@ -1,0 +1,318 @@
+{
+  "name": "Scrape Ideas Every Month From Reddit",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1008,
+        -32
+      ],
+      "id": "e6807070-1741-49ab-9bb5-77a01f9ff7d6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0",
+          "mode": "list",
+          "cachedResultName": "Past Facts Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('Create sheet').item.json.title }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "Date": "={{ $json.dateToday }}",
+            "Title": "={{ $json.title }}",
+            "Body": "={{ $json.body }}",
+            "Is Used?": "No"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Is Used?",
+              "displayName": "Is Used?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        -16
+      ],
+      "id": "1e41050f-a193-4cb1-b32e-85be413fbfa6",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hDLyMZTxYmRl9Rac",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6b7c15a1-da73-410f-8b46-7946e813f1a6",
+              "name": "Title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "8689ab50-262f-41c5-9d0e-4d9b1d6c5eb9",
+              "name": "Body",
+              "value": "={{ $json.body }}",
+              "type": "string"
+            },
+            {
+              "id": "7e8d512d-c1d6-4b13-8faa-5ff53b076a78",
+              "name": "Date",
+              "value": "={{ $('Format Date').item.json.formattedDate }}",
+              "type": "string"
+            },
+            {
+              "id": "0a7aa580-6120-4d18-8ca8-fc0f89cdc682",
+              "name": "IsUsed?",
+              "value": "No",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -32
+      ],
+      "id": "c8e3ea0d-7767-4bbf-9cf6-a4b34a77794f",
+      "name": "Get Key Details"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -32,
+        -32
+      ],
+      "id": "15f064aa-2cdd-48a1-8b2c-a8a204f68396",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/practicaltools~apify-reddit-api/run-sync-get-dataset-items?token=[APIFY TOKEN]",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"startUrls\": [{ \"url\": \"https://www.reddit.com/r/UnpopularFacts/\" }],\n  \"sort\": \"top\",\n  \"maxItems\": 30,\n  \"skipCommunity\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -464,
+        -32
+      ],
+      "id": "a41ed32c-9a89-4c52-b174-47a67c971812",
+      "name": "Scrape Ideas from Reddit1"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "format": "MM-dd-yyyy",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        -32
+      ],
+      "id": "66813332-fb9e-43b8-90c2-569e416c79ca",
+      "name": "Format Date"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0",
+          "mode": "list",
+          "cachedResultName": "Past Facts Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0/edit?usp=drivesdk"
+        },
+        "title": "=FCT-IDEAS-{{ $('Format Date').item.json.formattedDate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -656,
+        -32
+      ],
+      "id": "1e729a39-8b3a-499c-86c7-b84a2491263f",
+      "name": "Create sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hDLyMZTxYmRl9Rac",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Get Key Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Key Details": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Ideas from Reddit1": {
+      "main": [
+        [
+          {
+            "node": "Get Key Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Date": {
+      "main": [
+        [
+          {
+            "node": "Create sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create sheet": {
+      "main": [
+        [
+          {
+            "node": "Scrape Ideas from Reddit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6d718d68-6ddc-4ce8-b00d-1b9790f1ff9e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "bbPmauhT5pfU20vf",
+  "tags": []
+}
