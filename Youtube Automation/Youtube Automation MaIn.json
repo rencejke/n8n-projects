@@ -1,0 +1,980 @@
+{
+  "name": "Youtube Automation MaIn",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "af1d2f85-40a7-44b8-b551-91962d290ee9",
+              "leftValue": "={{ $json.output.script }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "95b975a4-f1ff-4b63-8b27-58fcbf7d8ede",
+              "leftValue": "={{ $json.output.keywords }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "56815b4c-8d01-47bf-a1f7-eb225608c9a3",
+              "leftValue": "={{ $json.output.description }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d91835e2-f98a-4963-a48a-0724405cc0da",
+              "leftValue": "={{ $json.output.tags }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -784,
+        496
+      ],
+      "id": "9a315eeb-c758-436f-9d4a-881974b90af1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "command": "docker exec ffmpeg bash -c '\nls /data/shared/*.jpeg | sort | while read f; do\n  echo \"file '\"'\"'$f'\"'\"'\"\n  echo \"duration 10\"\ndone > /data/shared/input.txt && \\\nffmpeg -y \\\n  -f concat \\\n  -safe 0 \\\n  -i /data/shared/input.txt \\\n  -i /data/shared/speech.mp3 \\\n  -vf \"scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,subtitles=/data/shared/subtitle.srt\" \\\n  -c:v libx264 \\\n  -c:a aac \\\n  -shortest \\\n  /data/shared/output.mp4\n'"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        672,
+        912
+      ],
+      "id": "e841dd53-f62f-4339-8ceb-a1d28e3f0b51",
+      "name": "Create Video using FFMPEG"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/shared/{{ $binary.data.fileName }}",
+        "options": {
+          "append": false
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        -272
+      ],
+      "id": "1b6aee26-4dc8-4aca-b205-a44628885734",
+      "name": "Save Image Locally"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/shared/speech.mp3",
+        "options": {
+          "append": false
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        480
+      ],
+      "id": "23318a7e-9a2f-4afd-8122-e77b1e3233e4",
+      "name": "Save voice Locally"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        96
+      ],
+      "id": "9c58d4b5-98f0-4cf1-9f8e-b97aa046d6e4",
+      "name": "Wait 5s",
+      "webhookId": "876a9d6d-1d61-44ca-bad6-f0663faf95e7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9c79f676-c647-49e5-8caf-6132a6c7396b",
+              "name": "Image link",
+              "value": "={{ $json.src.landscape }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        80
+      ],
+      "id": "1aad57a0-7eca-461d-b385-b40a2b485e28",
+      "name": "Image Links"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        80
+      ],
+      "id": "8b2210af-ff59-4c54-98af-819b7edc1aeb",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "photos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        32,
+        80
+      ],
+      "id": "40eef55c-3cd0-4f84-a1a9-62584286c3f3",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['Image link'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        672,
+        96
+      ],
+      "id": "b63a55ee-b364-4122-885d-d55f637b1caf",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pexels.com/v1/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $json.keywords }}"
+            },
+            {
+              "name": "per_page",
+              "value": "6"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "503ba216-6bad-4c1e-bad3-565b1f369605",
+      "name": "Get PEXELS Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "e2AJ8IxsOjDPagFY",
+          "name": "pexels header auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6b7c15a1-da73-410f-8b46-7946e813f1a6",
+              "name": "script",
+              "value": "={{ $json.output.script }}",
+              "type": "string"
+            },
+            {
+              "id": "8689ab50-262f-41c5-9d0e-4d9b1d6c5eb9",
+              "name": "keywords",
+              "value": "={{ $json.output.keywords }}",
+              "type": "string"
+            },
+            {
+              "id": "2ec58277-7228-4415-b7af-22be89149db0",
+              "name": "title",
+              "value": "={{ $json.output.title }}",
+              "type": "string"
+            },
+            {
+              "id": "38e242a8-f5f2-417c-8b1f-1269d2eb3c35",
+              "name": "description",
+              "value": "={{ $json.output.description }}",
+              "type": "string"
+            },
+            {
+              "id": "707cf5ac-3f19-4af2-9079-4fe4419cd7b1",
+              "name": "tags",
+              "value": "={{ $json.output.tags }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        480
+      ],
+      "id": "7ae33cc1-e3f8-4f1f-82d8-2ed7e62ee843",
+      "name": "Get Details"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        160
+      ],
+      "id": "2f8dd048-e1b9-4ffd-b246-b8b75441df03",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"script\": \"test\",\n  \"keywords\": [\"test\", \"test\"],\n  \"title\": \"test\",\n  \"description\":\"test\",\n  \"tags\": [\"test\", \"test\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -784,
+        160
+      ],
+      "id": "0f337750-a6df-4f92-b892-369c8b542063",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8880/v1/audio/speech",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "kokoro"
+            },
+            {
+              "name": "input",
+              "value": "={{ $json.script }}"
+            },
+            {
+              "name": "voice",
+              "value": "af_bella"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        64,
+        480
+      ],
+      "id": "4bf35661-dd74-44b1-9ae8-0b5ad7a2f816",
+      "name": "Generate Voice"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6b7c15a1-da73-410f-8b46-7946e813f1a6",
+              "name": "title",
+              "value": "={{ $json.Title }}",
+              "type": "string"
+            },
+            {
+              "id": "8689ab50-262f-41c5-9d0e-4d9b1d6c5eb9",
+              "name": "body",
+              "value": "={{ $json.Body }}",
+              "type": "string"
+            },
+            {
+              "id": "7e8d512d-c1d6-4b13-8faa-5ff53b076a78",
+              "name": "dateToday",
+              "value": "={{ $('Format Date').item.json.formattedDate }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1584,
+        496
+      ],
+      "id": "b6d86ebc-e8fb-430d-a33e-e09b360d16d0",
+      "name": "Get Key Details1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0",
+          "mode": "list",
+          "cachedResultName": "Past Facts Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Is Used?",
+              "lookupValue": "No"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1968,
+        496
+      ],
+      "id": "898d02c0-f1c0-4dfd-a8cd-2be100412446",
+      "name": "Get Unused Ideas",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hDLyMZTxYmRl9Rac",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        496
+      ],
+      "id": "899c529f-b578-4bed-9abf-ecbb977ff624",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst script = $input.first().json.script\n\n// Settings\nconst wordsPerMinute = 150;\nconst wordsPerLine = 7; // how many words per subtitle line\n\n// Helpers\nfunction toSrtTime(seconds) {\n  const h = Math.floor(seconds / 3600);\n  const m = Math.floor((seconds % 3600) / 60);\n  const s = Math.floor(seconds % 60);\n  const ms = Math.round((seconds % 1) * 1000);\n  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')},${String(ms).padStart(3,'0')}`;\n}\n\n// Split script into chunks\nconst words = script.trim().split(/\\s+/);\nconst secondsPerWord = 60 / wordsPerMinute;\nconst chunks = [];\n\nfor (let i = 0; i < words.length; i += wordsPerLine) {\n  chunks.push(words.slice(i, i + wordsPerLine).join(' '));\n}\n\n// Build SRT\nlet srt = '';\nlet currentTime = 0;\n\nchunks.forEach((line, index) => {\n  const wordCount = line.split(/\\s+/).length;\n  const duration = wordCount * secondsPerWord;\n  const start = currentTime;\n  const end = currentTime + duration;\n\n  srt += `${index + 1}\\n`;\n  srt += `${toSrtTime(start)} --> ${toSrtTime(end)}\\n`;\n  srt += `${line}\\n\\n`;\n\n  currentTime = end;\n});\n\nreturn [{ json: { srt } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        912
+      ],
+      "id": "ad50ecf6-fc3c-46d4-afbf-c7b9063ba5a8",
+      "name": "Script to Subtitle"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "srt",
+        "options": {
+          "fileName": "subtitle.srt"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        912
+      ],
+      "id": "f88d4eb0-08b7-42be-976d-d212a3a7c02e",
+      "name": "Convert to SRT"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/data/shared/subtitle.srt",
+        "options": {
+          "append": false
+        }
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        912
+      ],
+      "id": "62793622-1ae3-4187-8fe1-dd809d24e938",
+      "name": "Save Subtitle Locally"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0",
+          "mode": "list",
+          "cachedResultName": "Past Facts Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LY75YUMAZ7Fomu0XfwsFSCk_CdYt1C3t5W6QT_7ghy0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('Limit').item.json.Title }}",
+            "Is Used?": "Yes"
+          },
+          "matchingColumns": [
+            "Title"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Is Used?",
+              "displayName": "Is Used?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        1168
+      ],
+      "id": "db624fbe-a8af-41b9-8f55-57a862f213ce",
+      "name": "Update to USED",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hDLyMZTxYmRl9Rac",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "/data/shared/output.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        112,
+        1168
+      ],
+      "id": "fe8aff04-5746-46ab-bdba-bc3f9a0dded9",
+      "name": "Get Generated Video"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert YouTube scriptwriter specializing in short-form, high-retention content. Your scripts are punchy, conversational,  and optimized for watch time.\n\nWhen given a topic, you will write a 60-second YouTube script that follows \nthis exact structure:\n\n1. HOOK (0–5 sec): Open with a bold question, shocking stat, or \n   contrarian statement that stops the scroll. No greetings. No \"In this video...\". Start mid-thought.\n\n2. PROBLEM or CONTEXT (5–15 sec): Briefly set up why this matters \n   to the viewer. Make it personal — use \"you\".\n\n3. CORE EXPLANATION (15–45 sec): Deliver the main value in plain, \n   simple language. Use analogies. Avoid jargon. One idea per sentence. \n   Write for a 10-year-old to understand.\n\n4. CTA CLOSE (45–60 sec): End with ONE clear call to action \n   (follow, comment, or watch next). Make it feel natural, not salesy.\n\nRULES:\n- Word count: 250–270 words (spoken pace ~130 wpm)\n- Tone: Conversational, energetic, direct\n- No filler phrases: \"In today's video\", \"Don't forget to like\"\n- Always write in second person (\"you\", \"your\")\n- Write the script as plain continuous narration only. \n- If the body is empty or missing, generate the full script using only the Title. Expand the topic with relevant details, real-world examples, practical tips, and supporting context to reach exactly 250–270 words.\n\nTOPICS:\nTitle: {{ $json.title }}\nBody: {{ $json.body }}\n\nUsing ONLY the Title and Body above, return a JSON object with exactly these five fields:\n- \"script\": full plain narration text, 250–270 words\n- \"keywords\": array of 2–3 Pexels search terms that visually match the topic\n- \"title\": full plain text title about the topic (for youtube)\n- \"description\": description: SEO-optimized YouTube description written in simple, engaging language\n- \"tags\": 10–15 highly relevant YouTube SEO tags\n\nTAGS RULES:\n\n- Return tags as an array (list format)\n- Each tag must be a separate item in the array\n- Keep tags short and searchable\n- Include common search phrases and topic variations people would use\n\nRespond with ONLY a raw JSON object. No markdown. No code blocks. No explanation.\nStart with { and end with }.\n\n\nRespond with ONLY a raw JSON object. No markdown. No code blocks. No explanation.\nStart your response with { and end with }.\nExample format:\n{\"script\": \"...\", \"keywords\": [\"...\", \"...\"], \"title\": \"...\", \"description\": \"...\", \"tags\": [\"...\", \"...\"]}\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1152,
+        496
+      ],
+      "id": "d1e21448-71db-4656-8d64-48512ebf1cfc",
+      "name": "Youtube AI Agent"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('Get Details').item.json.title + ' #Shorts' }}",
+        "regionCode": "US",
+        "categoryId": "27",
+        "options": {
+          "description": "={{ $('Get Details').item.json.description }}",
+          "tags": "={{ JSON.parse($('Get Details').item.json.tags).join(',') }}"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        352,
+        1168
+      ],
+      "id": "48472434-3752-4461-9d17-19399b158b3d",
+      "name": "Upload a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "jqSJPuA3hfZWCLZK",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2336,
+        496
+      ],
+      "id": "20569522-12fe-48b3-95fe-3df3d143c858",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $now }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -2144,
+        496
+      ],
+      "id": "3aee4d95-bb66-4c73-9198-2fbba74b4526",
+      "name": "Format Date"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get Details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Youtube AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video using FFMPEG": {
+      "main": [
+        [
+          {
+            "node": "Get Generated Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save voice Locally": {
+      "main": [
+        []
+      ]
+    },
+    "Wait 5s": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Links": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Save Image Locally",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Image Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get PEXELS Image": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Details": {
+      "main": [
+        [
+          {
+            "node": "Get PEXELS Image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Voice",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Script to Subtitle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Youtube AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Youtube AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Voice": {
+      "main": [
+        [
+          {
+            "node": "Save voice Locally",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Unused Ideas": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Get Key Details1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Key Details1": {
+      "main": [
+        [
+          {
+            "node": "Youtube AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Script to Subtitle": {
+      "main": [
+        [
+          {
+            "node": "Convert to SRT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to SRT": {
+      "main": [
+        [
+          {
+            "node": "Save Subtitle Locally",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Subtitle Locally": {
+      "main": [
+        [
+          {
+            "node": "Create Video using FFMPEG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to USED": {
+      "main": [
+        []
+      ]
+    },
+    "Get Generated Video": {
+      "main": [
+        [
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a video": {
+      "main": [
+        [
+          {
+            "node": "Update to USED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Date": {
+      "main": [
+        [
+          {
+            "node": "Get Unused Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "II21jfFd7M8uqYww",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a44d478b-c6d5-40b7-91c6-e35b5b8f7485",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "jxu6HbKsScx1HeW8",
+  "tags": []
+}
