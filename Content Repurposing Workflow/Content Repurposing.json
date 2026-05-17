@@ -1,0 +1,813 @@
+{
+  "name": "Content Repurposing",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appIu6SLwngdGzMtr",
+          "mode": "list",
+          "cachedResultName": "Transcripts",
+          "cachedResultUrl": "https://airtable.com/appIu6SLwngdGzMtr"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblXDflMM5ZE2UX8U",
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://airtable.com/appIu6SLwngdGzMtr/tblXDflMM5ZE2UX8U"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $json.title }}",
+            "Creator": "={{ $json.channelName }}",
+            "Video URL": "={{ $json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creator",
+              "displayName": "Creator",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Video URL",
+              "displayName": "Video URL",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcriptss",
+              "displayName": "Transcriptss",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Transcripts",
+              "displayName": "Transcripts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        -32
+      ],
+      "id": "340ca0ff-6cfb-423b-aa4d-595d0ecfc5ff",
+      "name": "Create New Video Record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "kAl8YDqz8he0acyc",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appIu6SLwngdGzMtr",
+          "mode": "list",
+          "cachedResultName": "Transcripts",
+          "cachedResultUrl": "https://airtable.com/appIu6SLwngdGzMtr"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkOaDeXauorXJYc",
+          "mode": "list",
+          "cachedResultName": "Transcripts",
+          "cachedResultUrl": "https://airtable.com/appIu6SLwngdGzMtr/tblkOaDeXauorXJYc"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.order }} - {{ $('Loop Over Items1').item.json.fields.Title }}",
+            "Chunk Order": "={{ $json.order }}",
+            "Transcripts": "={{ $json.text }}",
+            "Video Data": "={{ [$json.recordId] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transcripts",
+              "displayName": "Transcripts",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Chunk Order",
+              "displayName": "Chunk Order",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Video Data",
+              "displayName": "Video Data",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -656,
+        -32
+      ],
+      "id": "b0dd6573-6f88-493c-93d9-dd569a3103e1",
+      "name": "Create Transcript1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "kAl8YDqz8he0acyc",
+          "name": "Airtable Personal Access Token account"
+        }
+      },
+      "continueOnFail": true,
+      "notes": "Creates transcript record in Airtable"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get Record ID from current item\nconst recordId = $input.first().json.id;\n\n// Get the transcript directly\nconst inputText = $('Process Transcript1').first().json.transcript;\n\nif (!inputText || inputText.length === 0) {\n  throw new Error('No transcript text to chunk');\n}\n\n// Chunking configuration\nconst maxChunkSize = 20000;\nconst minChunkSize = Math.floor(maxChunkSize * 0.25);\n\nlet chunks = [];\nlet chunkOrder = 1;\n\n// Add chunk with Record ID and order\nfunction addChunk(text) {\n  chunks.push({\n    recordId: recordId,\n    order: chunkOrder,\n    text: text\n  });\n  chunkOrder++;\n}\n\n// Find last period in text for clean sentence breaks\nfunction findLastPeriodIndex(text, startFromIndex) {\n  for (let i = startFromIndex; i >= 0; i--) {\n    if (text[i] === '.') {\n      return i + 1;\n    }\n  }\n  return -1;\n}\n\n// Main chunking logic\nlet startIndex = 0;\nwhile (startIndex < inputText.length) {\n  let endIndex = Math.min(startIndex + maxChunkSize, inputText.length);\n  let chunkText = inputText.slice(startIndex, endIndex);\n  \n  // If not at the end, try to break at a sentence\n  if (endIndex < inputText.length) {\n    let lastPeriodIndex = findLastPeriodIndex(chunkText, chunkText.length - 1);\n    if (lastPeriodIndex !== -1) {\n      endIndex = startIndex + lastPeriodIndex;\n      chunkText = inputText.slice(startIndex, endIndex);\n    }\n    \n    // Avoid tiny final chunks\n    let nextChunkSize = Math.min(maxChunkSize, inputText.length - endIndex);\n    if (nextChunkSize < minChunkSize) {\n      endIndex = Math.min(endIndex + nextChunkSize, inputText.length);\n      chunkText = inputText.slice(startIndex, endIndex);\n    }\n  }\n  \n  addChunk(chunkText);\n  startIndex = endIndex;\n}\n\n// Return each chunk as a separate item\nreturn chunks.map(chunk => ({\n  json: chunk\n}));"
+      },
+      "id": "78873ba4-01b1-4e16-9cb9-2a46a9c5d15f",
+      "name": "Chunk Transcript1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        -32
+      ],
+      "notes": "Chunks the transcript into manageable pieces for storage"
+    },
+    {
+      "parameters": {
+        "batchSize": "=1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1008,
+        -32
+      ],
+      "id": "1e20c3b2-bfc6-4f86-8e25-5cc73c168226",
+      "name": "Loop Over Items1",
+      "notes": "Processes transcript chunks one at a time"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the first item from Apify response\nconst data = $input.first().json;\n\n// Compile transcript segments into full text\nconst fullTranscript = data.transcript\n  .map(segment => segment.text)\n  .join(' ');\n\n// Return everything with correct fields\nreturn {\n  // Video identifiers\n  videoId: data.video_id,\n  url: data.url,\n  \n  // Video metadata\n  title: data.title,\n  description: data.description,\n  thumbnail: data.thumbnail,\n  publishedAt: data.published_at,\n  duration: data.duration_seconds,\n  \n  // Engagement stats\n  viewCount: data.view_count,\n  likeCount: data.like_count,\n  commentCount: data.comment_count,\n  \n  // Channel info\n  channelId: data.channel_id,\n  channelName: data.channel_name,\n  subscriberCount: data.subscriber_count,\n  \n  // Transcript data\n  language: data.language,\n  isAutoGenerated: data.is_auto_generated,\n  transcript: fullTranscript\n};"
+      },
+      "id": "61935520-c729-4431-81d2-8723699bf567",
+      "name": "Process Transcript1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        -32
+      ],
+      "notes": "Processes and formats the transcript data"
+    },
+    {
+      "parameters": {
+        "formTitle": "Get YouTube Transcript",
+        "formDescription": "Get any YouTube transcript by dropping the link.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "YouTube Video URL",
+              "placeholder": "https://youtu.be/A0y6yoQVu8Y",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Get the Transcript"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1744,
+        -32
+      ],
+      "id": "a0288a80-43ef-4905-8b9f-bd2bf5fc5be2",
+      "name": "On form submission1",
+      "webhookId": "8bb5e706-3e2e-4f34-9f4c-6d21c736faa7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/starvibe~youtube-video-transcript/run-sync-get-dataset-items?token={APIFY_TOKEN}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "youtube_url",
+              "value": "={{ $json['YouTube Video URL'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1552,
+        -32
+      ],
+      "id": "2293c927-fda4-4575-8555-8eee29087558",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appIu6SLwngdGzMtr",
+          "mode": "list",
+          "cachedResultName": "Transcripts",
+          "cachedResultUrl": "https://airtable.com/appIu6SLwngdGzMtr"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblXDflMM5ZE2UX8U",
+          "mode": "list",
+          "cachedResultName": "Video Data",
+          "cachedResultUrl": "https://airtable.com/appIu6SLwngdGzMtr/tblXDflMM5ZE2UX8U"
+        },
+        "returnAll": false,
+        "limit": 1,
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Created",
+              "direction": "desc"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "0f01d75f-af4f-450f-adf9-4f11dfaa3409",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "kAl8YDqz8he0acyc",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a sales enablement assistant. From the text provided, extract key insights for a sales battlecard. Follow these instructions carefully:\n\n1. Extract product feature highlights.\n2. Extract common objections and suggested responses.\n3. Extract unique selling points (USPs) or competitive advantages.\n4. Extract any key statistics or metrics mentioned.\n\n**Output requirements:**\n- Present exactly in this Markdown format, using bold headings for each section and bullet points for individual insights.\n- Do NOT output JSON, code objects, or extra commentary.\n- Keep the structure exactly as shown.\n\nTemplate to follow:\n\n- **Product Feature Highlights**\n- Feature 1: [Detailed description]\n- Feature 2: [Detailed description]\n\n- **Objection-Handling Tips**\n- **Objection**: [Customer concern]\n- **Response**: [Suggested response]\n\n- **Unique Selling Points**\n- USP 1: [Description]\n- USP 2: [Description]\n\n- **Key Metrics**\n- Metric 1: [Details]\n- Metric 2: [Details]\n\nDo NOT output JSON, parts arrays, or extra text. Output everything as a Markdown code block.\n\nIf a section has no data, use placeholders like [No data provided]. \n\nTranscript: {{ $json.Transcripts[0] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        -416
+      ],
+      "id": "c8100798-38ce-40ec-b3ba-aae99524d247",
+      "name": "Sales",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tHA4NCic7qaQbxDi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a professional social media copywriter. Your task is to create tailored social media posts for 4 platforms based on the input text provided.\n\nFor each platform, strictly follow the tone, format, and constraints below:\n\n---\n\n🔷 LINKEDIN\n- Tone: Professional, insightful, thought-leadership\n- Format: Start with a strong hook sentence. Follow with 3–5 short paragraphs or bullet points highlighting key insights. End with a question or call to action to drive engagement.\n- Length: 150–300 words\n- Style: No slang. Use industry-relevant language. Add 3–5 relevant hashtags at the end.\n\n---\n\n📸 INSTAGRAM\n- Tone: Energetic, engaging, conversational\n- Format: Start with an attention-grabbing first line (acts as the caption hook). Follow with 2–3 short punchy sentences. End with a clear call to action (e.g., \"Save this post!\", \"Drop a 🔥 below!\", \"Link in bio!\"). Add 10–15 relevant hashtags on a new line.\n- Length: 50–100 words (excluding hashtags)\n- Style: Use emojis naturally throughout. Keep it fun and relatable.\n\n---\n\n🐦 TWITTER/X\n- Tone: Punchy, direct, witty\n- Format: One single post. No threads. Must be UNDER 280 characters including hashtags.\n- Length: Strictly under 280 characters\n- Style: Lead with the most compelling insight. Add 2–3 hashtags inline or at the end.\n\n---\n\n📘 FACEBOOK\n- Tone: Conversational, warm, community-focused\n- Format: Start with a relatable opening line. Write 2–4 sentences expanding on the topic in a friendly, storytelling tone. Include a placeholder for an article link: [INSERT LINK HERE]. End with an engaging question to spark comments.\n- Length: 80–150 words\n- Style: Avoid heavy jargon. Write like you're talking to a friend. Use 1–2 emojis max.\n\n---\n\nOUTPUT FORMAT INSTRUCTIONS:\n- Label each section clearly: LINKEDIN, INSTAGRAM, TWITTER/X, FACEBOOK\n- Do NOT include any explanations, commentary, or meta-text outside the posts themselves\n- Do NOT wrap output in JSON or code blocks\n- Each post must be fully self-contained and ready to copy-paste\n\n---\n\nTEXT: {{ $json.Transcripts[0] }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        -32
+      ],
+      "id": "e59a28df-21fb-47e3-bf55-3c755458f38d",
+      "name": "Social Media",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tHA4NCic7qaQbxDi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "",
+        "subject": "=Sales Battlecard - {{ $today }}",
+        "message": "={{ $json.plainText }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        -560
+      ],
+      "id": "a7d458c1-cbee-4656-82e9-29edab4aeec2",
+      "name": "Send a message",
+      "webhookId": "694441f7-6991-4183-8572-cd300e7cfa38",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cCbGwPal08iyQQ8N",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AMTUBB8BB",
+          "mode": "list",
+          "cachedResultName": "sales"
+        },
+        "text": "={{ $json.plainText }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "sendAsUser": "Clarence Jake Bonilla"
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        928,
+        -352
+      ],
+      "id": "9b8cc27a-0e52-4edd-a3f4-518af56b2482",
+      "name": "Send a message1",
+      "webhookId": "c8491bbe-5520-4b17-b2a5-35811cf2b6f3",
+      "credentials": {
+        "slackApi": {
+          "id": "SfC5lowO5bcojlQu",
+          "name": "User Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.twitter }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -32
+      ],
+      "id": "e39c54fc-5021-4597-bf42-f94119b05d32",
+      "name": "Create Tweet",
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "uFSuNFFhyk2CTbB1",
+          "name": "X account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        176,
+        544
+      ],
+      "id": "8e22021a-ea19-4f1d-b416-26f5bfe36a8e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tHA4NCic7qaQbxDi",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// n8n Code Node — Social Media Post Categorizer\n// Input:  $input.first().json  (Gemini output with platform posts)\n// Output: Individual fields per platform, ready for social media nodes\n// ============================================================\n\n// --- 1. Grab raw input from previous node --------------------\nconst raw = $input.first().json.content.parts[0].text\n  $input.first().json.text ??\n  $input.first().json.output ??\n  $input.first().json.content ??\n  $input.first().json.message ??\n  $input.first().json.response ??\n  JSON.stringify($input.first().json);\n\nif (!raw) throw new Error(\"No input found. Check the key name in $input.first().json\");\n\n// --- 2. Clean and parse JSON ---------------------------------\nconst cleaned = raw\n  .replace(/```json\\s*/gi, \"\")\n  .replace(/```\\s*/gi, \"\")\n  .trim();\n\nlet posts;\ntry {\n  posts = JSON.parse(cleaned);\n} catch (e) {\n  throw new Error(\"Failed to parse JSON: \" + e.message + \"\\nInput preview: \" + raw.slice(0, 300));\n}\n\nif (!Array.isArray(posts)) throw new Error(\"Expected an array of platform posts.\");\n\n// --- 3. Normalize platform names -----------------------------\nconst normalize = (str) =>\n  str\n    .toUpperCase()\n    .replace(/\\s+/g, \"\")\n    .replace(\"TWITTER/X\", \"TWITTER\")\n    .replace(\"TWITTERX\", \"TWITTER\")\n    .replace(\"X(TWITTER)\", \"TWITTER\");\n\n// --- 4. Map posts to a lookup object -------------------------\nconst postMap = {};\nfor (const item of posts) {\n  const platform = normalize(item.platform ?? item.Platform ?? \"\");\n  const post = item.post ?? item.Post ?? item.content ?? item.Content ?? \"\";\n  if (platform && post) {\n    postMap[platform] = post;\n  }\n}\n\n// --- 5. Build clean output -----------------------------------\nconst linkedin  = postMap[\"LINKEDIN\"]  ?? null;\nconst instagram = postMap[\"INSTAGRAM\"] ?? null;\nconst twitter   = postMap[\"TWITTER\"]   ?? null;\nconst facebook  = postMap[\"FACEBOOK\"]  ?? null;\n\n// --- 6. Warn about missing platforms -------------------------\nconst missing = [\"LINKEDIN\", \"INSTAGRAM\", \"TWITTER\", \"FACEBOOK\"].filter(\n  (p) => !postMap[p]\n);\n\nreturn [\n  {\n    json: {\n      linkedin,\n      instagram,\n      twitter,\n      facebook,\n      ...(missing.length ? { warning: `Missing platforms: ${missing.join(\", \")}` } : {}),\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -32
+      ],
+      "id": "ea6142cd-ad3d-4c75-92a4-1bdcb80f3a2d",
+      "name": "Social Media Content Organizer"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// n8n Code Node — Battlecard JSON to Markdown Cleaner\n// Input:  $input.first().json  (the raw text from previous node)\n// Output: { markdown: \"...\" }\n// ============================================================\n\n// --- 1. Grab the raw text from the previous n8n node ----------\nconst rawText = $input.first().json.content.parts[0].text // adjust key if needed\n  ?? $input.first().json.output\n  ?? $input.first().json.content\n  ?? $input.first().json.message;\n\nif (!rawText) throw new Error(\"No input text found. Check the key name in $input.first().json\");\n\n// --- 2. Strip any wrapping code fences or extra whitespace ----\nconst cleaned = rawText\n  .replace(/```json\\s*/gi, \"\")\n  .replace(/```\\s*/gi, \"\")\n  .trim();\n\n// --- 3. Parse JSON -------------------------------------------\nlet data;\ntry {\n  data = JSON.parse(cleaned);\n} catch (e) {\n  throw new Error(\"Failed to parse JSON: \" + e.message + \"\\nRaw input was:\\n\" + rawText.slice(0, 300));\n}\n\n// --- 4. Helper: safe array getter ----------------------------\nconst getArray = (obj, ...keys) => {\n  for (const key of keys) {\n    if (Array.isArray(obj[key])) return obj[key];\n  }\n  return [];\n};\n\n// --- 5. Build Markdown sections ------------------------------\nconst lines = [];\n\n// ── Product Feature Highlights ──\nconst features = getArray(data, \"Product Feature Highlights\", \"features\", \"Features\");\nif (features.length) {\n  lines.push(\"**Product Feature Highlights**\");\n  features.forEach((item, i) => {\n    const name = item.Feature ?? item.feature ?? item.name ?? item.Name ?? `Feature ${i + 1}`;\n    const desc = item.Description ?? item.description ?? item.detail ?? \"\";\n    lines.push(`- ${name}: ${desc}`);\n  });\n  lines.push(\"\");\n}\n\n// ── Objection-Handling Tips ──\nconst objections = getArray(data, \"Objection-Handling Tips\", \"Objections\", \"objections\");\nif (objections.length) {\n  lines.push(\"**Objection-Handling Tips**\");\n  objections.forEach(item => {\n    const objection = item.Objection ?? item.objection ?? item.concern ?? item.Concern ?? \"\";\n    const response  = item.Response  ?? item.response  ?? item.answer  ?? item.Answer  ?? \"\";\n    lines.push(`- **Objection**: ${objection}`);\n    lines.push(`  **Response**: ${response}`);\n  });\n  lines.push(\"\");\n}\n\n// ── Unique Selling Points ──\nconst usps = getArray(data, \"Unique Selling Points\", \"USPs\", \"usps\");\nif (usps.length) {\n  lines.push(\"**Unique Selling Points**\");\n  usps.forEach((item, i) => {\n    const usp  = item.USP  ?? item.usp  ?? item.title ?? item.Title ?? `USP ${i + 1}`;\n    const desc = item.Description ?? item.description ?? item.detail ?? \"\";\n    lines.push(`- ${usp}: ${desc}`);\n  });\n  lines.push(\"\");\n}\n\n// ── Key Metrics ──\nconst metrics = getArray(data, \"Key Metrics\", \"Metrics\", \"metrics\", \"Statistics\", \"statistics\");\nif (metrics.length) {\n  lines.push(\"**Key Metrics**\");\n  metrics.forEach((item, i) => {\n    const metric  = item.Metric  ?? item.metric  ?? item.name    ?? item.Name    ?? `Metric ${i + 1}`;\n    const details = item.Details ?? item.details ?? item.value   ?? item.Value   ?? \"\";\n    lines.push(`- ${metric}: ${details}`);\n  });\n  lines.push(\"\");\n}\n\n// --- 6. Build final output -----------------------------------\nconst NL = \"\\n\";\nconst markdown = lines.join(NL);\n\n// plainText: same content but guaranteed real newlines (for nodes that don't render markdown)\nconst plainText = markdown.replace(/\\*\\*/g, \"\");  // strip ** bold markers for plain text\n\nreturn [{ json: { markdown, plainText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        -416
+      ],
+      "id": "a510514c-8067-4e8a-b150-b47ab65caa5a",
+      "name": "Text Cleaner"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize the key points and insights frem the {{ $json.Transcripts }}. I need:\n\n1. A brief summary of the most important keaways.\n2. Any significant topics or themes discussed.\n3. Noteworthy quotes, statistics, or data points.\n4. Any recommendations or action points suggested.\n\nFormat the response in a concise, easy-to-read format.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        160,
+        320
+      ],
+      "id": "fc5abebe-b310-4b3f-aeec-f13a5b3b57b9",
+      "name": "Content Summarizer Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "",
+        "subject": "=Summarize Data From Transcripted Video -  {{ $now }}",
+        "emailType": "text",
+        "message": "={{ $json.plainText }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        240
+      ],
+      "id": "6821d321-6412-4a07-8d3d-313e65550b71",
+      "name": "Send Summarize Data",
+      "webhookId": "e3be40e5-765a-4aa5-b075-ae90d7582df6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cCbGwPal08iyQQ8N",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AMJKUBV2Q",
+          "mode": "list",
+          "cachedResultName": "summarize-data"
+        },
+        "text": "={{ $json.plainText }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        912,
+        480
+      ],
+      "id": "43e3f1e5-ae33-4bb6-8945-d9209e633669",
+      "name": "Send Summarize Data Slack",
+      "webhookId": "d2b4433d-7a23-40b1-96f3-a09c263bef94",
+      "credentials": {
+        "slackApi": {
+          "id": "HR7jLxbYpVA9sHkx",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// n8n Code Node — Markdown / Escaped Text to Plain Text\n// Input:  $input.first().json  (any field containing markdown or escaped text)\n// Output: { plainText: \"...\" }\n// ============================================================\n\n// --- 1. Grab raw input ---------------------------------------\nconst raw = $input.first().json.output\n  $input.first().json.text ??\n  $input.first().json.output ??\n  $input.first().json.content ??\n  $input.first().json.message ??\n  $input.first().json.response ??\n  $input.first().json.markdown ??\n  JSON.stringify($input.first().json);\n\nif (!raw) throw new Error(\"No input found. Check the key name in $input.first().json\");\n\n// --- 2. Convert to plain text --------------------------------\nlet plain = raw\n\n  // Fix escaped newlines and tabs first\n  .replace(/\\\\n/g, \"\\n\")\n  .replace(/\\\\t/g, \"\\t\")\n  .replace(/\\\\r/g, \"\")\n\n  // Remove markdown headings (##, ###, etc.)\n  .replace(/^#{1,6}\\s+/gm, \"\")\n\n  // Remove bold/italic (**text**, __text__, *text*, _text_)\n  .replace(/\\*\\*(.+?)\\*\\*/g, \"$1\")\n  .replace(/__(.+?)__/g, \"$1\")\n  .replace(/\\*(.+?)\\*/g, \"$1\")\n  .replace(/_(.+?)_/g, \"$1\")\n\n  // Remove inline code (`code`)\n  .replace(/`(.+?)`/g, \"$1\")\n\n  // Remove code blocks (```...```)\n  .replace(/```[\\s\\S]*?```/g, \"\")\n\n  // Convert markdown bullet points (*, -, •) to plain dashes\n  .replace(/^[\\*\\-•]\\s+/gm, \"- \")\n\n  // Remove blockquotes (> text)\n  .replace(/^>\\s+/gm, \"\")\n\n  // Remove horizontal rules (---, ___, ***)\n  .replace(/^(-{3,}|_{3,}|\\*{3,})$/gm, \"\")\n\n  // Remove markdown links [text](url) → just keep text\n  .replace(/\\[([^\\]]+)\\]\\([^\\)]+\\)/g, \"$1\")\n\n  // Remove image markdown ![alt](url)\n  .replace(/!\\[([^\\]]*)\\]\\([^\\)]+\\)/g, \"\")\n\n  // Remove HTML tags if any slipped in\n  .replace(/<[^>]+>/g, \"\")\n\n  // Collapse 3+ consecutive newlines into 2\n  .replace(/\\n{3,}/g, \"\\n\\n\")\n\n  // Trim leading/trailing whitespace\n  .trim();\n\n// --- 3. Return output ----------------------------------------\nreturn [{ json: { plainText: plain } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        320
+      ],
+      "id": "5ad87fd7-0ed8-4526-8d4b-405de1966283",
+      "name": "Output Cleaner"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create New Video Record1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Transcript1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunk Transcript1": {
+      "main": [
+        [
+          {
+            "node": "Create Transcript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Chunk Transcript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Transcript1": {
+      "main": [
+        [
+          {
+            "node": "Create New Video Record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Process Transcript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Sales",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Social Media",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Content Summarizer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sales": {
+      "main": [
+        [
+          {
+            "node": "Text Cleaner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Media": {
+      "main": [
+        [
+          {
+            "node": "Social Media Content Organizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Summarizer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Social Media Content Organizer": {
+      "main": [
+        [
+          {
+            "node": "Create Tweet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Cleaner": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Summarizer Agent": {
+      "main": [
+        [
+          {
+            "node": "Output Cleaner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output Cleaner": {
+      "main": [
+        [
+          {
+            "node": "Send Summarize Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Summarize Data Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "378799c3-93ec-4bcf-86f3-153f49b2448a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6d70ecd0364098eefb3995a906c7228fe28f0da7423f903d27cce071f51fdf54"
+  },
+  "id": "CLxn7-wA1oPR9bQ2kYKDd",
+  "tags": []
+}
