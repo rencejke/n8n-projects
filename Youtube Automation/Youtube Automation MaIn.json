@@ -70,7 +70,7 @@
     },
     {
       "parameters": {
-        "command": "docker exec ffmpeg bash -c '\nls /data/shared/*.jpeg | sort | while read f; do\n  echo \"file '\"'\"'$f'\"'\"'\"\n  echo \"duration 10\"\ndone > /data/shared/input.txt && \\\nffmpeg -y \\\n  -f concat \\\n  -safe 0 \\\n  -i /data/shared/input.txt \\\n  -i /data/shared/speech.mp3 \\\n  -vf \"scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,subtitles=/data/shared/subtitle.srt\" \\\n  -c:v libx264 \\\n  -c:a aac \\\n  -shortest \\\n  /data/shared/output.mp4\n'"
+        "command": "docker exec ffmpeg bash -c '\nls /data/shared/*.jpg | sort | while read f; do\n  echo \"file '\"'\"'$f'\"'\"'\"\n  echo \"duration 10\"\ndone > /data/shared/input.txt && \\\nffmpeg -y \\\n  -f concat \\\n  -safe 0 \\\n  -i /data/shared/input.txt \\\n  -i /data/shared/speech.mp3 \\\n  -vf \"scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,subtitles=/data/shared/subtitle.srt\" \\\n  -c:v libx264 \\\n  -c:a aac \\\n  -shortest \\\n  /data/shared/output.mp4\n'"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
@@ -613,7 +613,7 @@
       "parameters": {
         "resource": "video",
         "operation": "upload",
-        "title": "={{ $('Get Details').item.json.title + ' #Shorts' }}",
+        "title": "={{ (() => {\n  const raw = $('Get Details').item.json.title || 'Untitled Video';\n  const maxLen = 91;\n  let t = raw.length > maxLen ? raw.slice(0, maxLen) : raw;\n  if (raw.length > maxLen) t = t.slice(0, t.lastIndexOf(' '));\n  return t + ' #Shorts';\n})() }}",
         "regionCode": "US",
         "categoryId": "27",
         "options": {
@@ -970,7 +970,7 @@
     "errorWorkflow": "II21jfFd7M8uqYww",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "a44d478b-c6d5-40b7-91c6-e35b5b8f7485",
+  "versionId": "92add383-eab4-4c19-9435-fd9c1f1b074f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
